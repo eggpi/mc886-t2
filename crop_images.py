@@ -22,9 +22,13 @@ def load_coordinates_file(coords_file, images_dir, cropped_dir):
             nx, ny,
             mx, my) = [fields[0]] + map(float, fields[1:])
 
+            image_path = os.path.join(images_dir, image + '.jpg')
+            if not os.path.exists(image_path):
+                continue
+
             jobs.append(
                 CropJob(
-                    image = os.path.join(images_dir, image + '.jpg'),
+                    image = image_path,
                     output = os.path.join(cropped_dir, image + '.jpg'),
                     left_eye = np.array((lex, ley), dtype = 'int'),
                     right_eye = np.array((rex, rey), dtype = 'int'),
@@ -74,7 +78,7 @@ if __name__ == '__main__':
     coords_file = sys.argv[2]
     cropped_dir = sys.argv[3]
 
-    size = (100, 100)
+    size = (150, 150)
     if len(sys.argv) == 5:
         size = map(int, sys.argv[4].split('x'))
 
