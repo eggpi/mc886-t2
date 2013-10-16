@@ -101,7 +101,7 @@ apply.lda <- function(bdc, bdr) {
     # instead of bdr only?
     grouping <- psapply(rownames(bdr), get.person.from.image.name)
     lda.results <- lda(bdr, grouping)
-    scaling <- lda.results[["scaling"]]
+    scaling <- lda.results$scaling
     bdr <- bdr %*% scaling
     bdc <- bdc %*% scaling
 
