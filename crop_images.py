@@ -78,7 +78,7 @@ if __name__ == '__main__':
     coords_file = sys.argv[2]
     cropped_dir = sys.argv[3]
 
-    size = (150, 150)
+    size = (50, 50)
     if len(sys.argv) == 5:
         size = map(int, sys.argv[4].split('x'))
 

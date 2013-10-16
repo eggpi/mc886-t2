@@ -2,6 +2,11 @@ library("jpeg")
 library("parallel")
 library("FNN")
 
+# doing princomp for all feature vectors and taking
+# the summary() of the result, we see that the first
+# 157 components account for 0.9500240613 of the variance
+PCA_COMPONENTS = 157
+
 BDR_DIR = "cropped/bdr"
 BDC_DIR = "cropped/bdc"
 
@@ -75,8 +80,26 @@ compute.correct.classifications <- function(query.results, bdc, bdr) {
     })))
 }
 
+apply.pca <- function(bdc, bdr) {
+    # FIXME should we apply PCA on all feature vectors
+    # instead of bdr only?
+    pca.result <- princomp(bdr, scale = TRUE)
+    rotation <- loadings(pca.result)[,1:PCA_COMPONENTS]
+    bdr <- bdr %*% rotation
+    bdc <- bdc %*% rotation
+
+    return(list(bdc, bdr))
+}
+
 bdc <- load.feature.vectors.from.image.dir(BDC_DIR)
 bdr <- load.feature.vectors.from.image.dir(BDR_DIR)
-query.results <- euclidean.query.bdr(bdc, bdr)
 
+query.results <- euclidean.query.bdr(bdc, bdr)
+print(compute.correct.classifications(query.results, bdc, bdr))
+
+pca.results <- apply.pca(bdc, bdr)
+bdc.pca <- pca.results[[1]]
+bdr.pca <- pca.results[[2]]
+
+query.results <- euclidean.query.bdr(bdc.pca, bdr.pca)
 print(compute.correct.classifications(query.results, bdc, bdr))
