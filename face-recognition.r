@@ -115,7 +115,7 @@ bdc.pca <- pca.results[[1]]
 bdr.pca <- pca.results[[2]]
 
 query.results <- euclidean.query.bdr(bdc.pca, bdr.pca)
-print(compute.correct.classifications(query.results, bdc, bdr))
+print(compute.correct.classifications(query.results, bdc.pca, bdr.pca))
 
 lda.results <- apply.lda(bdc, bdr)
 bdc.lda <- lda.results[[1]]
