@@ -3,13 +3,11 @@ library("parallel")
 library("FNN")
 library("MASS")
 
-# doing princomp for all feature vectors and taking
-# the summary() of the result, we see that the first
-# 157 components account for 0.9500240613 of the variance
-PCA_COMPONENTS = 157
-
 BDR_DIR = "cropped/bdr"
 BDC_DIR = "cropped/bdc"
+
+# the variance to retain when selecting principal components
+PCA_CUMULATIVE_VARIANCE = 0.95
 
 psapply <- function(data, fn) {
     return(simplify2array(mclapply(data, fn, mc.cores = 8)))
@@ -85,7 +83,13 @@ apply.pca <- function(bdc, bdr) {
     # FIXME should we apply PCA on all feature vectors
     # instead of bdr only?
     pca.result <- princomp(bdr, scale = TRUE)
-    rotation <- loadings(pca.result)[,1:PCA_COMPONENTS]
+
+    variances <- pca.result$sdev ^ 2
+    variance.proportions <- variances / sum(variances)
+    cumulative.variances <- cumsum(variance.proportions)
+    components <- which(cumulative.variances > PCA_CUMULATIVE_VARIANCE)[1]
+
+    rotation <- loadings(pca.result)[,1:components]
     bdr <- bdr %*% rotation
     bdc <- bdc %*% rotation
 
