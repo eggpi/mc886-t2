@@ -1,6 +1,7 @@
 library("jpeg")
 library("parallel")
 library("FNN")
+library("MASS")
 
 # doing princomp for all feature vectors and taking
 # the summary() of the result, we see that the first
@@ -91,6 +92,18 @@ apply.pca <- function(bdc, bdr) {
     return(list(bdc, bdr))
 }
 
+apply.lda <- function(bdc, bdr) {
+    # FIXME should we apply LDA on all feature vectors
+    # instead of bdr only?
+    grouping <- psapply(rownames(bdr), get.person.from.image.name)
+    lda.results <- lda(bdr, grouping)
+    scaling <- lda.results[["scaling"]]
+    bdr <- bdr %*% scaling
+    bdc <- bdc %*% scaling
+
+    return(list(bdc, bdr))
+}
+
 bdc <- load.feature.vectors.from.image.dir(BDC_DIR)
 bdr <- load.feature.vectors.from.image.dir(BDR_DIR)
 
@@ -103,3 +116,17 @@ bdr.pca <- pca.results[[2]]
 
 query.results <- euclidean.query.bdr(bdc.pca, bdr.pca)
 print(compute.correct.classifications(query.results, bdc, bdr))
+
+lda.results <- apply.lda(bdc, bdr)
+bdc.lda <- lda.results[[1]]
+bdr.lda <- lda.results[[2]]
+
+query.results <- euclidean.query.bdr(bdc.lda, bdr.lda)
+print(compute.correct.classifications(query.results, bdc.lda, bdr.lda))
+
+lda.pca.results <- apply.lda(bdc.pca, bdr.pca)
+bdc.lda.pca <- lda.pca.results[[1]]
+bdr.lda.pca <- lda.pca.results[[2]]
+
+query.results <- euclidean.query.bdr(bdc.lda.pca, bdr.lda.pca)
+print(compute.correct.classifications(query.results, bdc.lda.pca, bdr.lda.pca))
