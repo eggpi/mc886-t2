@@ -125,20 +125,21 @@ names(results) <- c("euclid,plain", "euclid,pca", "euclid,lda",
 bdc <- load.feature.vectors.from.image.dir(BDC_DIR)
 bdr <- load.feature.vectors.from.image.dir(BDR_DIR)
 
-print(query.bdr(bdc, bdr, "custom"))
-
 results["euclid,plain"] <- query.bdr(bdc, bdr, "euclidean")
 
-pca.results <- apply.pca(bdc, bdr)
+# calculate PCA and LDA in parallel
+pca.and.lda.results <- psapply(
+    c(call("apply.pca", bdc, bdr), call("apply.lda", bdc, bdr)), eval
+)
+
+pca.results <- pca.and.lda.results[,1]
 bdc.pca <- pca.results[[1]]
 bdr.pca <- pca.results[[2]]
-
 results["euclid,pca"] <- query.bdr(bdc.pca, bdr.pca, "euclidean")
 
-lda.results <- apply.lda(bdc, bdr)
+lda.results <- pca.and.lda.results[,2]
 bdc.lda <- lda.results[[1]]
 bdr.lda <- lda.results[[2]]
-
 results["euclid,lda"] <- query.bdr(bdc.lda, bdr.lda, "euclidean")
 
 lda.pca.results <- apply.lda(bdc.pca, bdr.pca)
