@@ -118,9 +118,9 @@ query.bdr <- function(bdc, bdr, dist) {
     return(compute.correct.classifications(query.results, bdc, bdr))
 }
 
-results <- rep(0, 5)
+results <- rep(0, 6)
 names(results) <- c("euclid,plain", "euclid,pca", "euclid,lda",
-                    "euclid,lda+pca", "custom,lda+pca")
+                    "euclid,lda(pca)", "euclid,pca(lda)", "custom,lda(pca)")
 
 bdc <- load.feature.vectors.from.image.dir(BDC_DIR)
 bdr <- load.feature.vectors.from.image.dir(BDR_DIR)
@@ -142,9 +142,23 @@ bdc.lda <- lda.results[[1]]
 bdr.lda <- lda.results[[2]]
 results["euclid,lda"] <- query.bdr(bdc.lda, bdr.lda, "euclidean")
 
-lda.pca.results <- apply.lda(bdc.pca, bdr.pca)
+# calculate PCA(LDA) and LDA(PCA) in parallel as well
+pca.and.lda.results <- psapply(
+    c(call("apply.lda", bdc.pca, bdr.pca), call("apply.pca", bdc.lda, bdr.lda)),
+    eval
+)
+
+lda.pca.results <- pca.and.lda.results[,1]
 bdc.lda.pca <- lda.pca.results[[1]]
 bdr.lda.pca <- lda.pca.results[[2]]
 
-results["euclid,lda+pca"] <- query.bdr(bdc.lda.pca, bdr.lda.pca, "euclidean")
-results["custom,lda+pca"] <- query.bdr(bdc.lda.pca, bdr.lda.pca, "custom")
+pca.lda.results <- pca.and.lda.results[,2]
+bdc.pca.lda <- pca.lda.results[[1]]
+bdr.pca.lda <- pca.lda.results[[2]]
+
+results["euclid,lda(pca)"] <- query.bdr(bdc.lda.pca, bdr.lda.pca, "euclidean")
+results["euclid,pca(lda)"] <- query.bdr(bdc.pca.lda, bdr.pca.lda, "euclidean")
+
+results["custom,lda(pca)"] <- query.bdr(bdc.lda.pca, bdr.lda.pca, "custom")
+
+print(results)
