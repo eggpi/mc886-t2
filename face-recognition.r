@@ -35,7 +35,7 @@ load.feature.vectors.from.image.dir <- function(dir) {
     return(fvs)
 }
 
-# our custom distance
+# our custom distance, L1 norm
 custom.dist <- function(v1, v2) {
     return(sum(abs(v1 - v2)))
 }
