@@ -35,9 +35,9 @@ load.feature.vectors.from.image.dir <- function(dir) {
     return(fvs)
 }
 
-# our custom distance; euclidean for now
+# our custom distance
 custom.dist <- function(v1, v2) {
-    return(sqrt(sum((v1 - v2) ^ 2)))
+    return(sum(abs(v1 - v2)))
 }
 
 # query a fv in bdr.
