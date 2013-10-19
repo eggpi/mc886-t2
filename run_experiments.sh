@@ -15,8 +15,12 @@ for dim in ${IMAGE_DIMENSIONS[@]}; do
 
     rm -rf cropped
     scale $dim
-    r --save < face-recognition.r | tail -n 10 > $resultsd/results
-    mv .RData $resultsd/RData
+
+    PCA_CUTOFF=0.95 r --save < face-recognition.r | tail -n 10 > $resultsd/results95
+    mv .RData $resultsd/RData95
+
+    PCA_CUTOFF=0.99 r --save < face-recognition.r | tail -n 10 > $resultsd/results99
+    mv .RData $resultsd/RData99
 done
 
 rm -rf cropped

@@ -7,7 +7,7 @@ BDR_DIR = "cropped/bdr"
 BDC_DIR = "cropped/bdc"
 
 # the variance to retain when selecting principal components
-PCA_CUMULATIVE_VARIANCE = 0.99
+PCA_CUMULATIVE_VARIANCE = as.double(Sys.getenv("PCA_CUTOFF"))
 
 psapply <- function(data, fn) {
     return(simplify2array(mclapply(data, fn, mc.cores = 8)))
