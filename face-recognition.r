@@ -82,14 +82,25 @@ compute.correct.classifications <- function(query.results, bdc, bdr) {
 apply.pca <- function(bdc, bdr) {
     # FIXME should we apply PCA on all feature vectors
     # instead of bdr only?
-    pca.result <- princomp(bdr, scale = TRUE)
+    use.princomp <- dim(bdr)[2] < dim(bdr)[1]
+
+    if (use.princomp) {
+        pca.result <- princomp(bdr, scale = TRUE)
+    } else {
+        pca.result <- prcomp(bdr, scale = TRUE)
+    }
 
     variances <- pca.result$sdev ^ 2
     variance.proportions <- variances / sum(variances)
     cumulative.variances <- cumsum(variance.proportions)
     components <- which(cumulative.variances > PCA_CUMULATIVE_VARIANCE)[1]
 
-    rotation <- loadings(pca.result)[,1:components]
+    if (use.princomp) {
+        rotation <- loadings(pca.result)[,1:components]
+    } else {
+        rotation <- pca.result$rotation[,1:components]
+    }
+
     bdr <- bdr %*% rotation
     bdc <- bdc %*% rotation
 
