@@ -1,11 +1,11 @@
 EXPERIMENTS=experiments/
-IMAGE_DIMENSIONS=(50 75 100)
+IMAGE_DIMENSIONS=(64x96 32x48 50x50 75x75 100x100)
 
 function scale() {
     dim=$1
     mkdir -p cropped/{bdr,bdc}
-    python crop_images.py data/bdc data/coords.3368.txt cropped/bdc ${dim}x${dim}
-    python crop_images.py data/bdr data/coords.3368.txt cropped/bdr ${dim}x${dim}
+    python crop_images.py data/bdc data/coords.3368.txt cropped/bdc $dim
+    python crop_images.py data/bdr data/coords.3368.txt cropped/bdr $dim
 }
 
 for dim in ${IMAGE_DIMENSIONS[@]}; do
