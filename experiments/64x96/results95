@@ -1,0 +1,10 @@
++ }
+> 
+> results["best,custom"] <- query.bdr(best.bdc, best.bdr, "custom")
+> 
+> print(paste("Best method is", best.method))
+[1] "Best method is lda.pca"
+> print(results)
+      plain         pca         lda     lda.pca     pca.lda best,custom 
+        136         137         101         151         106         141 
+> 
